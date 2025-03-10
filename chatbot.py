@@ -3,29 +3,28 @@ from telegram.ext import Updater, MessageHandler, Filters
 import configparser
 import logging
 
+
 def main():
-    # Load your token and create an Updater for your Bot
+    # 读取配置文件，获取令牌并创建 Updater 对象
     config = configparser.ConfigParser()
     config.read('config.ini')
-    updater = Updater(token=config['TELEGRAM']['ACCESS_TKN'], use_context=True)
+    updater = Updater(token=config['TELEGRAM']['ACCESS_TOKEN'], use_context=True)
     dispatcher = updater.dispatcher
 
-    # You can set this logging module,
-    # so you will know when and why things do not work as expected
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                        level=logging.INFO)
+    # 配置日志记录，方便调试
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-    # register a dispatcher to handle message:
-    # here we register an echo dispatcher
+    # 注册一个消息处理器，用于处理文本消息（非命令消息）
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
 
-    # To start the bot:
+    # 启动机器人
     updater.start_polling()
     updater.idle()
 
 
 def echo(update, context):
+    # 将接收到的消息转换为大写并回复
     reply_message = update.message.text.upper()
     logging.info("Update:" + str(update))
     logging.info("context:" + str(context))
